@@ -1,5 +1,5 @@
 import React from "react";
-import { PreviewTemplateComponentProps, CmsConfig } from "decap-cms-core";
+import { PreviewTemplateComponentProps, CmsConfig } from "decap-cms-app";
 
 import { createTransform } from "./transform";
 import { useRef, useState, useEffect } from "react";

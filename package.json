@@ -41,7 +41,6 @@
   "dependencies": {
     "@capri-js/react": "^6.0.0-next.11",
     "decap-cms-app": "npm:@fgnass/decap-cms-app@latest",
-    "decap-cms-core": "npm:@fgnass/decap-cms-core@latest",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "react": "^19.0.0",

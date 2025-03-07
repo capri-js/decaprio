@@ -12,9 +12,9 @@ import type {
   CmsFieldFileOrImage,
   CmsFieldRelation,
   CmsFieldDateTime,
-} from "decap-cms-core";
+} from "decap-cms-app";
 
-export { type CmsCollection };
+export { type CmsCollection, CmsField };
 
 export type FilesCollection = CmsCollection & {
   files: CmsCollectionFile[];
@@ -51,7 +51,6 @@ export function isRelationField(field: unknown): field is RelationField {
 }
 
 // Base field types
-export type Field = CmsField;
 export type OptionalField = CmsFieldBase & { required: false };
 export type ObjectField = CmsFieldBase & CmsFieldObject;
 export type VariableListField = CmsFieldBase &

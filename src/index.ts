@@ -1,4 +1,4 @@
-import type { CmsField, CmsCollection } from "decap-cms-core";
+import type { CmsField, CmsCollection } from "decap-cms-app";
 import { CollectionOrLayout, CollectionRegistry, Layout } from "./registry";
 import { ObjectField } from "./decap-types";
 import { Block, createBlocksComponent } from "./blocks";

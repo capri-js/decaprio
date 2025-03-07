@@ -6,7 +6,7 @@ import type {
   CmsFieldMeta,
   CmsFieldNumber,
   CmsFieldBoolean,
-} from "decap-cms-core";
+} from "decap-cms-app";
 import type {
   ObjectField,
   StringField,

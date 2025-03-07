@@ -1,8 +1,8 @@
 import immutable from "immutable";
-import type { CmsField } from "decap-cms-core";
 import {
-  isRelationField,
   CmsCollection,
+  CmsField,
+  isRelationField,
   isFolderCollection,
 } from "./decap-types";
 import { getPathForSlug } from "./match";
