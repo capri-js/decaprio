@@ -1,6 +1,6 @@
 # Decaprio 🍸
 
-A typesafe I/O layer for Decap CMS (formerly Netlify CMS) that provides full-page live previews with visual editing and a focus on developer experience.
+A typesafe I/O layer for [Decap CMS](https://decapcms.org) that provides full-page live previews with visual editing and a focus on developer experience.
 
 ## Features
 
@@ -14,9 +14,7 @@ A typesafe I/O layer for Decap CMS (formerly Netlify CMS) that provides full-pag
 npm install decaprio
 ```
 
-## Usage
-
-### Defining Collections
+## Defining Collections
 
 Use the `collection` function to define a collection. It serves two purposes:
 1. It enforces correct typings in your configuration
@@ -52,7 +50,7 @@ export default collection({
 });
 ```
 
-### Creating a Registry
+## Creating a Registry
 
 Next we need a place where we can collect all our collections. This can be done with the `collections` function which creates a `CollectionRegistry`:
 
@@ -78,7 +76,7 @@ export type CollectionProps<T> = InferCollection<T, typeof registry>;
 
 See the `CollectionProps` that gets exported in the last step? We can use it to create type-safe components to render the content of our collections.
 
-### Type-safe Layout Components
+## Type-safe Layout Components
 
 ```tsx
 // src/collections/posts.ts
@@ -100,7 +98,7 @@ const posts = collection({
     {
       name: 'content',
       label: 'Content',
-      widget: 'markdown',
+      widget: 'text',
     }
   ]
 });
@@ -110,7 +108,7 @@ function PostLayout({ title, content }: CollectionProps<typeof posts>) {
   return (
     <article>
       <h1>{title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <div>{content}</div>
     </article>
   );
 }
@@ -121,7 +119,7 @@ export default layout(posts, PostLayout);
 
 The `layout` function associates a collection with a React component, allowing you to register both with the registry. This is optional - you can register collections without layouts for settings or content that only gets embedded into other pages.
 
-### Working with Blocks
+## Working with Blocks
 
 Blocks are reusable parts that can be used to create page-builder-like experiences.
 
@@ -199,6 +197,7 @@ const config = collection({
   ]
 });
 
+// Use the Blocks component to render the content
 function PageLayout({ title, content }: CollectionProps<typeof config>) {
   return (
     <div>
@@ -211,7 +210,7 @@ function PageLayout({ title, content }: CollectionProps<typeof config>) {
 export default layout(config, PageLayout);
 ```
 
-# Configure Decap CMS
+## Configure Decap CMS
 
 ```tsx
 import { initDecapCMS } from 'decaprio/client';
@@ -238,18 +237,8 @@ The `initDecapCMS` function takes care of registering the full-page previews and
 - Your CSS inlined as a string (with Vite, you can use the `?inline` suffix)
 - A standard Decap CMS configuration (without the collections, as they come from the registry)
 
-> **NOTE:**
-> Decaprio currently requires a forked version of Decap CMS with improved ESM and TypeScript support. We are actively working on getting these improvements merged upstream.
 
-Add the following to your `package.json` to use the fork:
-
-```json
-"dependencies": {
-  "decap-cms-app": "npm:@fgnass/decap-cms-app@latest"
-}
-```
-
-### Server-side Rendering
+## Server-side Rendering
 
 Decaprio was built with Capri in mind, but it can be used with any suitable tool or framework that supports server-side rendering.
 
@@ -273,6 +262,32 @@ export async function getStaticProps({ params }) {
 }
 ```
 
+### Vite Integration
+
+Decaprio provides a Vite plugin that simplifies your setup by bundling everything you need:
+
+```tsx
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { decaprio } from 'decaprio/vite';
+import tailwindcss from '@tailwindcss/vite';
+import { registry } from './src/collections';
+
+export default defineConfig({
+  plugins: [
+    decaprio({
+      registry,
+      adminRoute: '/admin',
+      createIndexFiles: false,
+      inlineCss: true,
+    }),
+    tailwindcss()
+  ],
+});
+```
+
+> **NOTE:**
+> Decaprio bundles a forked version of Decap CMS with improved ESM and TypeScript support. The Vite plugin automatically sets up the necessary aliases to ensure everything works correctly.
 
 ## License
 
