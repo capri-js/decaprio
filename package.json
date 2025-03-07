@@ -1,0 +1,56 @@
+{
+  "name": "decaprio",
+  "version": "0.1.0",
+  "description": "A typesafe I/O layer for Decap CMS",
+  "repository": "capri-js/decaprio",
+  "keywords": [
+    "decap",
+    "cms",
+    "netlify-cms",
+    "react",
+    "typescript",
+    "capri"
+  ],
+  "author": "Felix Gnass <fgnass@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    }
+  },
+  "dependencies": {
+    "@capri-js/react": "^6.0.0-next.11",
+    "decap-cms-app": "npm:@fgnass/decap-cms-app@latest",
+    "decap-cms-core": "npm:@fgnass/decap-cms-core@latest",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.0.0"
+  }
+}
