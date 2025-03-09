@@ -1,5 +1,5 @@
 import { ComponentType } from "react";
-import { CmsCollection } from "./decap-types";
+import { CmsCollection } from "./decap-types.js";
 
 export class Layout<T extends CmsCollection> {
   constructor(public readonly collection: T, public readonly component: any) {}

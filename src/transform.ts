@@ -4,8 +4,8 @@ import {
   CmsField,
   isRelationField,
   isFolderCollection,
-} from "./decap-types";
-import { getPathForSlug } from "./match";
+} from "./decap-types.js";
+import { getPathForSlug } from "./match.js";
 
 type Immutable = immutable.Iterable<unknown, unknown>;
 

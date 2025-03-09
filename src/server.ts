@@ -1,8 +1,8 @@
 import { prerenderToNodeStream } from "react-dom/static";
 import { createElement } from "react";
-import { Content } from "./content";
-import { DefaultDocument } from "./default-document";
-import { CollectionRegistry } from "./registry";
+import { Content } from "./content.js";
+import { DefaultDocument } from "./default-document.js";
+import { CollectionRegistry } from "./registry.js";
 
 export { Content };
 

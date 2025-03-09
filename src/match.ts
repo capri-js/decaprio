@@ -1,4 +1,4 @@
-import { CmsCollection, isFolderCollection } from "./decap-types";
+import { CmsCollection, isFolderCollection } from "./decap-types.js";
 
 function previewPathToRegex(previewPath: string) {
   return new RegExp(

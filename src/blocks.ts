@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { ObjectField } from "./decap-types";
+import { ObjectField } from "./decap-types.js";
 
 export type Block<T extends ObjectField = any> = {
   config: T;

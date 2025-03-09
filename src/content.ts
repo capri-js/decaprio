@@ -4,16 +4,17 @@ import * as yaml from "js-yaml";
 import matter from "gray-matter";
 
 import {
+  CmsField,
   FilesCollection,
   FolderCollection,
   isFilesCollection,
   isFolderCollection,
   isNested,
-} from "./decap-types";
-import { createTransform } from "./transform";
-import { getIndexFile, getPathForSlug, matchPath } from "./match";
+} from "./decap-types.js";
+import { createTransform } from "./transform.js";
+import { getIndexFile, getPathForSlug, matchPath } from "./match.js";
 import { createElement } from "react";
-import { CollectionRegistry } from "./registry";
+import { CollectionRegistry } from "./registry.js";
 
 export class Content {
   constructor(private registry: CollectionRegistry) {}
@@ -104,7 +105,10 @@ export class Content {
     return null;
   }
 
-  protected async getContentAndFields(name: string, file: string) {
+  protected async getContentAndFields(
+    name: string,
+    file: string
+  ): Promise<{ data: any; fields: CmsField[] }> {
     const c = this.registry.getCollection(name);
     if (isFolderCollection(c)) {
       return {

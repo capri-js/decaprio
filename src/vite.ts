@@ -2,8 +2,8 @@ import { Plugin, PluginOption } from "vite";
 import capri from "@capri-js/react";
 import react from "@vitejs/plugin-react";
 import { optimizeLodashImports } from "@optimize-lodash/rollup-plugin";
-import { CollectionRegistry } from "./registry";
-import { listAllPaths } from "./server";
+import { CollectionRegistry } from "./registry.js";
+import { listAllPaths } from "./server.js";
 
 export interface DecaprioPluginOptions {
   registry: CollectionRegistry;

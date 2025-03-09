@@ -17,36 +17,37 @@ npm install decaprio
 ## Defining Collections
 
 Use the `collection` function to define a collection. It serves two purposes:
+
 1. It enforces correct typings in your configuration
 2. It returns the configuration as a const type, allowing Decaprio to infer its type
 
 ```tsx
 // src/collections/posts.ts
 
-import { collection } from 'decaprio';
+import { collection } from "decaprio";
 
 export default collection({
-  name: 'posts',
-  label: 'Blog Posts',
-  folder: 'content/posts',
+  name: "posts",
+  label: "Blog Posts",
+  folder: "content/posts",
   fields: [
     {
-      name: 'title',
-      label: 'Title',
-      widget: 'string',
+      name: "title",
+      label: "Title",
+      widget: "string",
       required: true,
     },
     {
-      name: 'date',
-      label: 'Publish Date',
-      widget: 'datetime',
+      name: "date",
+      label: "Publish Date",
+      widget: "datetime",
     },
     {
-      name: 'body',
-      label: 'Body',
-      widget: 'markdown',
-    }
-  ]
+      name: "body",
+      label: "Body",
+      widget: "markdown",
+    },
+  ],
 });
 ```
 
@@ -57,18 +58,14 @@ Next we need a place where we can collect all our collections. This can be done 
 ```tsx
 // src/collections/index.ts
 
-import { collections } from 'decaprio';
+import { collections } from "decaprio";
 
-import posts from './posts';
-import pages from './pages';
-import settings from './settings';
+import posts from "./posts";
+import pages from "./pages";
+import settings from "./settings";
 
 // Register all our collections
-export const registry = collections(
-  posts,
-  pages,
-  settings
-);
+export const registry = collections(posts, pages, settings);
 
 // Provide a utility type for type-safe components
 export type CollectionProps<T> = InferCollection<T, typeof registry>;
@@ -81,26 +78,26 @@ See the `CollectionProps` that gets exported in the last step? We can use it to 
 ```tsx
 // src/collections/posts.ts
 
-import { collection, layout } from 'decaprio';
-import { CollectionProps } from '.';
+import { collection, layout } from "decaprio";
+import { CollectionProps } from ".";
 
 // Define a collection
 const posts = collection({
-  name: 'posts',
-  label: 'Blog Posts',
-  folder: 'content/posts',
+  name: "posts",
+  label: "Blog Posts",
+  folder: "content/posts",
   fields: [
     {
-      name: 'title',
-      label: 'Title',
-      widget: 'string',
+      name: "title",
+      label: "Title",
+      widget: "string",
     },
     {
-      name: 'content',
-      label: 'Content',
-      widget: 'text',
-    }
-  ]
+      name: "content",
+      label: "Content",
+      widget: "text",
+    },
+  ],
 });
 
 // Layout component to render a post
@@ -126,7 +123,7 @@ Blocks are reusable parts that can be used to create page-builder-like experienc
 First, add this to your `src/collections/index.ts` file where you define the registry:
 
 ```ts
-import { InferBlock } from 'decaprio';
+import { InferBlock } from "decaprio";
 export type BlockProps<T> = InferBlock<T, typeof registry>;
 ```
 
@@ -162,8 +159,8 @@ export default block(config, TextBlock);
 We now need to collect all blocks in a similar way we did with the collections. Create a file `src/blocks/index.ts` like this:
 
 ```tsx
-import text from './text';
-import image from './image';
+import text from "./text";
+import image from "./image";
 
 export const { types, Blocks } = blocks(text, image);
 ```
@@ -179,22 +176,22 @@ Lets create a `pages` collection that uses the blocks we defined:
 // src/collections/pages.ts
 
 const config = collection({
-  name: 'pages',
-  label: 'Pages',
-  folder: 'content/pages',
+  name: "pages",
+  label: "Pages",
+  folder: "content/pages",
   fields: [
     {
-      name: 'title',
-      label: 'Title',
-      widget: 'string',
+      name: "title",
+      label: "Title",
+      widget: "string",
     },
     {
-      name: 'content',
-      label: 'Content Blocks',
-      widget: 'list',
+      name: "content",
+      label: "Content Blocks",
+      widget: "list",
       types, // <-- types imported from blocks/index.ts
-    }
-  ]
+    },
+  ],
 });
 
 // Use the Blocks component to render the content
@@ -212,10 +209,14 @@ export default layout(config, PageLayout);
 
 ## Configure Decap CMS
 
+Let's assume we we use a Vite-based setup. In this case we can initialize Decap like this:
+
 ```tsx
-import { initDecapCMS } from 'decaprio/client';
-import { registry } from './collections';
-import css from './styles.css?inline';
+// src/main.tsx
+
+import { initDecapCMS } from "decaprio/client";
+import { registry } from "./collections";
+import css from "./styles.css?inline";
 
 initDecapCMS({
   registry,
@@ -223,29 +224,68 @@ initDecapCMS({
   config: {
     // Standard Decap config without the collections
     backend: {
-      name: 'git-gateway',
-      branch: 'main',
+      name: "git-gateway",
+      branch: "main",
     },
-    media_folder: 'public/images',
-    public_folder: '/images',
+    media_folder: "public/images",
+    public_folder: "/images",
   },
 });
 ```
 
 The `initDecapCMS` function takes care of registering the full-page previews and requires:
+
 - Your registry of collections and layouts
 - Your CSS inlined as a string (with Vite, you can use the `?inline` suffix)
 - A standard Decap CMS configuration (without the collections, as they come from the registry)
 
-
 ## Server-side Rendering
 
-Decaprio was built with Capri in mind, but it can be used with any suitable tool or framework that supports server-side rendering.
-
+Decaprio provides a Vite plugin that lets you generate static pages with [Capri](https://capri.build):
 
 ```tsx
-import { Content } from 'decaprio/server';
-import { registry } from './collections';
+// vite.config.ts
+
+import { defineConfig } from "vite";
+import { decaprio } from "decaprio/vite";
+import tailwindcss from "@tailwindcss/vite";
+import { registry } from "./src/collections";
+
+export default defineConfig({
+  plugins: [
+    decaprio({
+      registry,
+      adminRoute: "/admin",
+      createIndexFiles: false,
+      inlineCss: true,
+    }),
+    tailwindcss(),
+  ],
+});
+```
+
+> **NOTE:**
+> Decaprio bundles a forked version of Decap CMS with improved ESM and TypeScript support. The Vite plugin automatically sets up the necessary aliases to ensure everything works correctly.
+
+In addition to the `src/main.tsx` entry file we created above, we need a second one right next to it called `main.server.tsx` that handles the generation of the static pages:
+
+```tsx
+// src/main.server.tsx
+
+import { registry } from "./collections";
+import { createRenderFunction } from "decaprio/server";
+import "./main.css";
+
+export const render = createRenderFunction(registry);
+```
+
+## Using other SSR tools
+
+While Decaprio was built with Capri in mind, it can be used with any suitable tool or framework that supports server-side rendering. In Next.js it would roughly look like this:
+
+```tsx
+import { Content } from "decaprio/server";
+import { registry } from "./collections";
 
 const content = new Content(registry);
 
@@ -253,7 +293,7 @@ const content = new Content(registry);
 
 export async function getStaticPaths() {
   const paths = await content.listAllPaths();
-  return paths.map(path => ({ params: { slug: path } }));
+  return paths.map((path) => ({ params: { slug: path } }));
 }
 
 export async function getStaticProps({ params }) {
@@ -261,33 +301,6 @@ export async function getStaticProps({ params }) {
   return { props: { content } };
 }
 ```
-
-### Vite Integration
-
-Decaprio provides a Vite plugin that simplifies your setup by bundling everything you need:
-
-```tsx
-// vite.config.ts
-import { defineConfig } from 'vite';
-import { decaprio } from 'decaprio/vite';
-import tailwindcss from '@tailwindcss/vite';
-import { registry } from './src/collections';
-
-export default defineConfig({
-  plugins: [
-    decaprio({
-      registry,
-      adminRoute: '/admin',
-      createIndexFiles: false,
-      inlineCss: true,
-    }),
-    tailwindcss()
-  ],
-});
-```
-
-> **NOTE:**
-> Decaprio bundles a forked version of Decap CMS with improved ESM and TypeScript support. The Vite plugin automatically sets up the necessary aliases to ensure everything works correctly.
 
 ## License
 

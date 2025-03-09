@@ -15,8 +15,8 @@ import type {
   SingleWidgetListField,
   MultiWidgetListField,
   SelectField,
-} from "./decap-types";
-import { CollectionRegistry } from "./registry";
+} from "./decap-types.js";
+import { CollectionRegistry } from "./registry.js";
 
 type CollectionByName<R extends CollectionRegistry, N extends string> = Extract<
   R["collections"][number],

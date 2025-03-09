@@ -1,13 +1,17 @@
 import { createElement } from "react";
-import { init, CmsConfig, CMS, CmsField, CmsCollection } from "decap-cms-app/init";
-import { CollectionOrLayout, CollectionRegistry, Layout } from "./registry";
-import { Block, createBlocksComponent } from "./blocks";
-import { ObjectField } from "./decap-types";
-import { Preview } from "./preview";
+import {
+  init,
+  CmsConfig,
+  CMS,
+  CmsField,
+  CmsCollection,
+} from "decap-cms-app/init";
+import { CollectionOrLayout, CollectionRegistry, Layout } from "./registry.js";
+import { Block, createBlocksComponent } from "./blocks.js";
+import { ObjectField } from "./decap-types.js";
+import { Preview } from "./preview.js";
 
-
-
-export type { InferCollection, InferBlock } from "./field-inference";
+export type { InferCollection, InferBlock } from "./field-inference.js";
 
 type DeepMutable<T> = T extends unknown
   ? {
