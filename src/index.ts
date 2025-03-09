@@ -1,7 +1,11 @@
-import type { CmsField, CmsCollection } from "decap-cms-app";
+import { createElement } from "react";
+import { init, CmsConfig, CMS, CmsField, CmsCollection } from "decap-cms-app/init";
 import { CollectionOrLayout, CollectionRegistry, Layout } from "./registry";
-import { ObjectField } from "./decap-types";
 import { Block, createBlocksComponent } from "./blocks";
+import { ObjectField } from "./decap-types";
+import { Preview } from "./preview";
+
+
 
 export type { InferCollection, InferBlock } from "./field-inference";
 
@@ -75,4 +79,32 @@ export function collections<const C extends CollectionOrLayout[]>(
   ...collections: C
 ) {
   return new CollectionRegistry(collections);
+}
+
+type Options = {
+  registry: CollectionRegistry;
+  css: string;
+  config: Omit<CmsConfig, "collections">;
+  setup?: (cms: CMS) => void;
+};
+export function initDecapCMS({ registry, css, config, setup }: Options) {
+  init({
+    config: {
+      ...config,
+      collections: registry.collections,
+    },
+    async setup(cms) {
+      for (const c of registry.collections) {
+        cms.registerPreviewTemplate(c.name, (props) =>
+          createElement(Preview, {
+            ...props,
+            css,
+            layout: registry.getLayout(c.name),
+          })
+        );
+      }
+
+      await setup?.(cms);
+    },
+  });
 }
