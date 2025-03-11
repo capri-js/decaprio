@@ -214,11 +214,11 @@ Let's assume we we use a Vite-based setup. In this case we can initialize Decap 
 ```tsx
 // src/main.tsx
 
-import { initDecapCMS } from "decaprio/client";
+import { init } from "decaprio/decap";
 import { registry } from "./collections";
 import css from "./styles.css?inline";
 
-initDecapCMS({
+init({
   registry,
   css, // In Vite, ?inline imports the CSS as string
   config: {

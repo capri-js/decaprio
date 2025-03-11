@@ -1,4 +1,4 @@
-import { Plugin, PluginOption } from "vite";
+import { PluginOption } from "vite";
 import capri from "@capri-js/react";
 import react from "@vitejs/plugin-react";
 import { optimizeLodashImports } from "@optimize-lodash/rollup-plugin";
