@@ -2,7 +2,16 @@ import { ComponentType } from "react";
 import { CmsCollection } from "./decap-types.js";
 
 export class Layout<T extends CmsCollection> {
-  constructor(public readonly collection: T, public readonly component: any) {}
+  readonly collection: T;
+  constructor(collection: T, public readonly component: any) {
+    this.collection = {
+      // Enable visual editing by default
+      editor: {
+        visualEditing: true,
+      },
+      ...collection,
+    };
+  }
 }
 
 export type CollectionOrLayout<T extends CmsCollection = any> = T | Layout<T>;
