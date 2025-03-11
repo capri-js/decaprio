@@ -233,11 +233,15 @@ init({
 });
 ```
 
-The `initDecapCMS` function takes care of registering the full-page previews and requires:
+The `init` function takes care of registering the full-page previews and requires:
 
 - Your registry of collections and layouts
 - Your CSS inlined as a string (with Vite, you can use the `?inline` suffix)
 - A standard Decap CMS configuration (without the collections, as they come from the registry)
+
+> **NOTE:**
+> Decaprio currently bundles a forked version of Decap CMS with improved ESM and TypeScript support. We are actively working
+> on getting these changes merged upstream.
 
 ## Server-side Rendering
 
@@ -263,9 +267,6 @@ export default defineConfig({
   ],
 });
 ```
-
-> **NOTE:**
-> Decaprio bundles a forked version of Decap CMS with improved ESM and TypeScript support. The Vite plugin automatically sets up the necessary aliases to ensure everything works correctly.
 
 In addition to the `src/main.tsx` entry file we created above, we need a second one right next to it called `main.server.tsx` that handles the generation of the static pages:
 

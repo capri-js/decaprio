@@ -37,9 +37,6 @@ export function decaprio(options: DecaprioPluginOptions): PluginOption {
             ...(config.resolve?.alias || {}),
             "lodash-es": "lodash",
             "lodash-es/(.*)": "lodash/$1",
-            // Ensure Decap CMS fork is used
-            "decap-cms-app": "@fgnass/decap-cms-app",
-            "decap-cms-core": "@fgnass/decap-cms-core",
           },
         },
       };
