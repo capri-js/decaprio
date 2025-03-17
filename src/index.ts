@@ -5,6 +5,9 @@ import { ObjectField } from "./decap-types.js";
 
 export type { InferCollection, InferBlock } from "./field-inference.js";
 
+export { markdown } from "./markdown.js";
+export { editorComponent } from "./editor-components.js";
+
 type DeepMutable<T> = T extends unknown
   ? {
       -readonly [P in keyof T]: DeepMutable<T[P]>;

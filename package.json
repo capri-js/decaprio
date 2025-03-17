@@ -14,6 +14,7 @@
   "author": "Felix Gnass <fgnass@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "dev": "tsc --watch",
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
@@ -43,12 +44,13 @@
     }
   },
   "dependencies": {
-    "@capri-js/react": "^6.0.0-next.12",
+    "@capri-js/react": "^6.0.0-next.13",
     "@optimize-lodash/rollup-plugin": "^1.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "decap-cms-app": "npm:@fgnass/decap-cms-app@latest",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
+    "markdown-to-jsx": "^7.7.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

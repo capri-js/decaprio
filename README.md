@@ -1,6 +1,6 @@
 # Decaprio 🍸
 
-A typesafe I/O layer for [Decap CMS](https://decapcms.org) that provides full-page live previews with visual editing and a focus on developer experience.
+A type-safe I/O layer for [Decap CMS](https://decapcms.org) that provides full-page live previews with visual editing and a focus on developer experience.
 
 ## Features
 
@@ -8,7 +8,19 @@ A typesafe I/O layer for [Decap CMS](https://decapcms.org) that provides full-pa
 - **React Integration**: Use the same components for both server-side rendering and live previews inside the CMS
 - **Content Transformation**: Built-in utilities for loading and transforming content
 
-## Installation
+## Quick Start
+
+The easiest way to get started is to use Decaprio with [Capri](https://capri.build) and use the `decap` starter template:
+
+```bash
+npm init capri my-capri-site -- -e decap
+```
+
+It will bootstrap a lightweight example project that closely matches the structure outlined in this README.
+
+## Manual Setup
+
+If you want to use a framework other than Capri or manually add Decaprio to an existing project follow these steps:
 
 ```bash
 npm install decaprio
@@ -127,12 +139,12 @@ import { InferBlock } from "decaprio";
 export type BlockProps<T> = InferBlock<T, typeof registry>;
 ```
 
-Now you can create a block:
+With this `BlockProps` utility type we can infer the props from the block's field config:
 
 ```tsx
 // src/blocks/Text.ts
 import { block, field } from 'decaprio';
-import { InferBlock } from '../collections';
+import { BlockProps } from '../collections';
 
 // Define a text block configuration
 const config = field({
@@ -149,14 +161,14 @@ const config = field({
 };
 
 // Create a type-safe component
-function TextBlock(props: InferBlock<typeof config>) {
+function TextBlock(props: BlockProps<typeof config>) {
   return <p>{props.content}</p>;
 }
 
 export default block(config, TextBlock);
 ```
 
-We now need to collect all blocks in a similar way we did with the collections. Create a file `src/blocks/index.ts` like this:
+We now need to collect all blocks similarly as we did with the collections. Create a file `src/blocks/index.ts` like this:
 
 ```tsx
 import text from "./text";
@@ -170,10 +182,12 @@ The `blocks` function returns an object with two properties:
 - `types`: An array of block configurations to use in a collection definition
 - `Blocks`: A React component that renders the appropriate block component based on the data
 
-Lets create a `pages` collection that uses the blocks we defined:
+Let's create a `pages` collection that uses the blocks we defined:
 
 ```tsx
 // src/collections/pages.ts
+
+import { types, Blocks } from "../blocks";
 
 const config = collection({
   name: "pages",
@@ -207,19 +221,71 @@ function PageLayout({ title, content }: CollectionProps<typeof config>) {
 export default layout(config, PageLayout);
 ```
 
+## Custom components inside Markdown content
+
+Decap support custom components inside its Markdown editor, so called _Editor Components_. Decaprio takes care of automatically serializing and de-serializing them as custom HTML tags and infers the proper types from the `fields` definition. It also provides a `<Markdown />` component to render Markdown content as JSX, including all the custom components.
+
+### 1. Create custom Editor Components
+
+```tsx
+// /markdown/LinkButton.tsx
+
+import { editorComponent } from "decaprio";
+
+export default editorComponent({
+  id: "LinkButton",
+  label: "Link Button",
+  fields: [
+    {
+      name: "label",
+      label: "Label",
+      widget: "string",
+    },
+    {
+      name: "link",
+      label: "Link",
+      widget: "string",
+    },
+  ],
+  toPreview: ({ label, link }) => (
+    <a href={link} className="rounded bg-primary text-white">
+      {label}
+    </a>
+  ),
+});
+```
+
+### 2. Create a `<Markdown />` component to render them
+
+```tsx
+// /markdown/index.ts
+
+import { markdown } from "decaprio";
+import linkButton from "./LinkButton";
+
+export const editorComponents = [linkButton];
+export const Markdown = markdown(editorComponents);
+```
+
+### 3. Register the components with Decap
+
+The last step is to register the components with Decap. This can be done by passing them to the `init` function of Decaprio as shown in the next chapter.
+
 ## Configure Decap CMS
 
-Let's assume we we use a Vite-based setup. In this case we can initialize Decap like this:
+Let's assume we use a Vite-based setup. In this case we can initialize Decap like this:
 
 ```tsx
 // src/main.tsx
 
 import { init } from "decaprio/decap";
 import { registry } from "./collections";
+import { editorComponents } from "./markdown";
 import css from "./styles.css?inline";
 
 init({
   registry,
+  editorComponents,
   css, // In Vite, ?inline imports the CSS as string
   config: {
     // Standard Decap config without the collections
@@ -233,9 +299,10 @@ init({
 });
 ```
 
-The `init` function takes care of registering the full-page previews and requires:
+The `init` function takes care of registering the full-page previews and accepts the following options:
 
 - Your registry of collections and layouts
+- Your custom Editor Components (optional)
 - Your CSS inlined as a string (with Vite, you can use the `?inline` suffix)
 - A standard Decap CMS configuration (without the collections, as they come from the registry)
 
