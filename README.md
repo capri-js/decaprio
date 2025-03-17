@@ -13,7 +13,7 @@ A type-safe I/O layer for [Decap CMS](https://decapcms.org) that provides full-p
 The easiest way to get started is to use Decaprio with [Capri](https://capri.build) and use the `decap` starter template:
 
 ```bash
-npm init capri@next my-capri-site -- -e decap
+npm init capri@next my-capri-site decap
 ```
 
 It will bootstrap a lightweight example project that closely matches the structure outlined in this README.
