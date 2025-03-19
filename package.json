@@ -44,7 +44,7 @@
     }
   },
   "dependencies": {
-    "@capri-js/react": "^6.0.0-next.13",
+    "@capri-js/react": "^6.0.0-next.12",
     "@optimize-lodash/rollup-plugin": "^1.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "decap-cms-app": "npm:@fgnass/decap-cms-app@latest",
