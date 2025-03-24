@@ -85,7 +85,8 @@ export function createTransform({
 
   const loadAndTransform = async (collectionName: string, slug: string) => {
     const value = await load(collectionName, slug);
-    const entry = isMap(value) ? value : immutable.fromJS(value);
+    let entry = isMap(value) ? value : immutable.fromJS(value);
+    entry = entry.set("href", getHref(collectionName, slug));
     const collection = getCollection(collectionName);
     const fields = collectionFields(collection, slug);
     return visit(entry, fields, `${collectionName}/${slug}:`);
@@ -166,7 +167,11 @@ export function createTransform({
             const value = await loadAndTransform(collectionName, slug);
             newMap = newMap.set(fieldName, value);
           } else {
-            newMap = newMap.set(fieldName, await loadAll(all));
+            const values = await loadAll(all);
+            values.forEach((v: any) => {
+              v.href = getHref(all, v.slug);
+            });
+            newMap = newMap.set(fieldName, values);
           }
         }
       }

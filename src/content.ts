@@ -12,7 +12,12 @@ import {
   isNested,
 } from "./decap-types.js";
 import { createTransform } from "./transform.js";
-import { getIndexFile, getPathForSlug, matchPath } from "./match.js";
+import {
+  getIndexFile,
+  getPathForSlug,
+  getSlugFromFile,
+  matchPath,
+} from "./match.js";
 import { createElement } from "react";
 import { CollectionRegistry } from "./registry.js";
 
@@ -116,9 +121,7 @@ export class Content {
         fields: c.fields!,
       };
     } else if (isFilesCollection(c)) {
-      const fileConfig = c.files.find(
-        (f) => path.basename(f.file, path.extname(f.file)) === file
-      );
+      const fileConfig = c.files.find((f) => getSlugFromFile(f.file) === file);
       if (!fileConfig) {
         throw new Error(`File '${file}' not found in collection '${name}'`);
       }

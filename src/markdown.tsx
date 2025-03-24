@@ -15,6 +15,6 @@ export function markdown(opts: ReactEditorComponentOptions[]) {
   };
 
   return ({ content }: { content: string }) => (
-    <Markdown options={options}>{content.replace(/\\\n/g, "\n")}</Markdown>
+    <Markdown options={options}>{content?.replace(/\\\n/g, "\n")}</Markdown>
   );
 }

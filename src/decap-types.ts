@@ -14,7 +14,7 @@ import type {
   CmsFieldDateTime,
 } from "decap-cms-app";
 
-export { type CmsCollection, CmsField };
+export { type CmsCollection, CmsField, CmsCollectionFile };
 
 export type FilesCollection = CmsCollection & {
   files: CmsCollectionFile[];

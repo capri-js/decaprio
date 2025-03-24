@@ -146,7 +146,14 @@ export type InferCollection<
   C,
   R extends CollectionRegistry
 > = C extends CmsCollection
-  ? InferFields<CollectionFields<C>, R> & { slug: string }
+  ? C extends { files: CmsCollectionFile[] }
+    ? {
+        [F in C["files"][number]["name"]]: InferFields<
+          Extract<C["files"][number], { name: F }>["fields"],
+          R
+        > & { slug: string };
+      }
+    : InferFields<CollectionFields<C>, R> & { slug: string }
   : C extends string
   ? InferFields<CollectionFields<CollectionByName<R, C>>, R> & { slug: string }
   : never;

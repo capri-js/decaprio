@@ -4,6 +4,7 @@ import type { CmsConfig, CMS } from "decap-cms-app";
 import { CollectionRegistry } from "./registry.js";
 import { Preview } from "./preview.js";
 import { ReactEditorComponentOptions } from "./editor-components.js";
+import { isFilesCollection } from "./decap-types.js";
 
 type Options = {
   css: string;
@@ -26,13 +27,25 @@ export function init({
     },
     async setup(cms) {
       for (const c of registry.collections) {
-        cms.registerPreviewTemplate(c.name, (props) =>
-          createElement(Preview, {
-            ...props,
-            css,
-            layout: registry.getLayout(c.name),
-          })
-        );
+        if (isFilesCollection(c)) {
+          c.files.forEach((f) => {
+            cms.registerPreviewTemplate(f.name, (props) =>
+              createElement(Preview, {
+                ...props,
+                css,
+                layout: registry.getLayout(f.name),
+              })
+            );
+          });
+        } else {
+          cms.registerPreviewTemplate(c.name, (props) =>
+            createElement(Preview, {
+              ...props,
+              css,
+              layout: registry.getLayout(c.name),
+            })
+          );
+        }
       }
       for (const c of editorComponents) {
         cms.registerEditorComponent(c);

@@ -24,8 +24,14 @@ function useTransform({
       loadAll: async (type) => {
         const entries = await getCollection(type);
         return entries.map((entry) => {
-          //TODO: add slug
-          return entry.get("data");
+          const slug = entry.get("slug");
+          const path = entry.get("path");
+          const data = entry.get("data");
+          return {
+            slug,
+            path,
+            ...data,
+          };
         });
       },
       getAsset: (path) => {
@@ -53,8 +59,8 @@ function useData(props: PreviewTemplateComponentProps) {
   const [data, setData] = useState<any>();
   const transform = useTransform(props);
   useEffect(() => {
-    transform(entry.getIn(["data"]), fields.toJS()).then((value) => {
-      value.slug = entry.getIn(["slug"]);
+    transform(entry.get("data"), fields.toJS()).then((value) => {
+      value.slug = entry.get("slug");
       setData(value);
     });
   }, [entry, transform, fields]);

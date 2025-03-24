@@ -1,18 +1,6 @@
 import { ComponentType } from "react";
 import { CmsCollection } from "./decap-types.js";
-
-export class Layout<T extends CmsCollection> {
-  readonly collection: T;
-  constructor(collection: T, public readonly component: any) {
-    this.collection = {
-      // Enable visual editing by default
-      editor: {
-        visualEditing: true,
-      },
-      ...collection,
-    };
-  }
-}
+import { Layout, FilesLayout } from "./layout.js";
 
 export type CollectionOrLayout<T extends CmsCollection = any> = T | Layout<T>;
 
@@ -31,7 +19,25 @@ export class CollectionRegistry<T extends CollectionOrLayout[] = any> {
     );
     for (const c of collections) {
       if (c instanceof Layout) {
-        this.layouts[c.collection.name] = c.component;
+        if (c instanceof FilesLayout) {
+          for (const f of c.collection.files) {
+            const layout = c.getLayout(f.name);
+            if (layout) {
+              this.layouts[f.name] = layout;
+            } else {
+              f.editor = { preview: false };
+            }
+          }
+        } else {
+          const layout = c.getLayout();
+          if (layout) {
+            this.layouts[c.collection.name] = layout;
+          } else {
+            c.collection.editor = { preview: false };
+          }
+        }
+      } else {
+        c.editor = { preview: false };
       }
     }
   }

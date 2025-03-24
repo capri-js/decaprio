@@ -32,6 +32,19 @@ Use the `collection` function to define a collection. It serves two purposes:
 
 1. It enforces correct typings in your configuration
 2. It returns the configuration as a const type, allowing Decaprio to infer its type
+3. It applies sensible defaults:
+
+For folder collections:
+* folder: `content/${name}`
+* slug: `{{slug}}`
+* create: `true`
+* extension: `md` if there is a `body` field, `yml` otherwise
+
+For collection files:
+* path: `content/${collection.name}/${name}.${extension}`
+
+> **NOTE:**
+> The extension is determined the same way as for folder collections
 
 ```tsx
 // src/collections/posts.ts
@@ -41,7 +54,6 @@ import { collection } from "decaprio";
 export default collection({
   name: "posts",
   label: "Blog Posts",
-  folder: "content/posts",
   fields: [
     {
       name: "title",
@@ -127,6 +139,16 @@ export default layout(posts, PostLayout);
 ```
 
 The `layout` function associates a collection with a React component, allowing you to register both with the registry. This is optional - you can register collections without layouts for settings or content that only gets embedded into other pages.
+
+For File Collections, you need to pass an object instead with the `name` of each file as key, for which you want to provide a layout:
+
+```tsx
+export default layout(pages, {
+  home: HomeLayout,
+  about: AboutLayout,
+});
+```
+
 
 ## Working with Blocks
 
