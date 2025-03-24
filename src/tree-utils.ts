@@ -5,14 +5,36 @@ type Item = {
   slug: string;
 };
 
+export function sortBySlug(collection: CmsCollection, items: Item[]) {
+  const bySlug = (a: Item, b: Item) => {
+    return stripIndex(collection, a.slug).localeCompare(
+      stripIndex(collection, b.slug)
+    );
+  };
+  const sorted = [...items];
+  sorted.sort(bySlug);
+  return sorted;
+}
+
+export function getTopLevelItems(
+  collection: CmsCollection,
+  candidates: Item[]
+) {
+  return sortBySlug(
+    collection,
+    candidates.filter(({ slug }) => !getParentSlug(collection, slug))
+  );
+}
+
 export function getChildren(
   collection: CmsCollection,
   slug: string,
   candidates: Item[]
 ) {
   const parentSlug = stripIndex(collection, slug);
-  return candidates.filter(({ slug }) =>
-    isParent(collection, parentSlug, slug)
+  return sortBySlug(
+    collection,
+    candidates.filter(({ slug }) => isParent(collection, parentSlug, slug))
   );
 }
 
@@ -40,7 +62,8 @@ export function getSiblings(
   candidates: Item[]
 ) {
   const parentSlug = getParentSlug(collection, slug);
-  return candidates.filter(({ slug }) =>
-    isParent(collection, parentSlug, slug)
+  return sortBySlug(
+    collection,
+    candidates.filter(({ slug }) => isParent(collection, parentSlug, slug))
   );
 }
