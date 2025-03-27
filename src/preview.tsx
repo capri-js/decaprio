@@ -42,7 +42,7 @@ function useTransform({
         return `${asset.url}#path=${path}`;
       },
       getCollection: (name) => {
-        const c = (config as any as CmsConfig).collections.find(
+        const c = (config as any as CmsConfig<false>).collections.find(
           (c) => c.name === name
         );
         if (!c) {

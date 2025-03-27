@@ -1,6 +1,6 @@
 import { CollectionOrLayout, CollectionRegistry } from "./registry.js";
 import { Block, createBlocksComponent } from "./blocks.js";
-import { CmsField, ObjectField } from "./decap-types.js";
+import { Field, ObjectField } from "./decap-types.js";
 import { FilesLayout, FolderLayout, Layout } from "./layout.js";
 import { CollectionConfig, isFilesCollectionConfig } from "./types.js";
 
@@ -16,13 +16,11 @@ type DeepMutable<T> = T extends unknown
     }
   : never;
 
-export function field<const F extends CmsField>(field: F): DeepMutable<F> {
+export function field<const F extends Field>(field: F): DeepMutable<F> {
   return field as any;
 }
 
-export function fields<const F extends CmsField[]>(
-  ...fields: F
-): DeepMutable<F> {
+export function fields<const F extends Field[]>(...fields: F): DeepMutable<F> {
   return fields as any;
 }
 
@@ -43,6 +41,12 @@ export function blocks<const B extends Block[]>(...blocks: B) {
   };
 }
 
+function hasMarkdownBody(fields?: Field[]) {
+  return fields?.some(
+    ({ name, widget }) => name === "body" && widget === "markdown"
+  );
+}
+
 const contentFolder = "content";
 
 export function collection<const C extends CollectionConfig>(
@@ -53,8 +57,7 @@ export function collection<const C extends CollectionConfig>(
       ...collection,
       files: collection.files.map(({ name, file, fields, ...rest }) => {
         if (!file) {
-          const md = fields.some((field) => field.name === "body");
-          const ext = md ? "md" : "yml";
+          const ext = hasMarkdownBody(fields) ? "md" : "yml";
           file = `${contentFolder}/${collection.name}/${name}.${ext}`;
         }
         return {
@@ -67,7 +70,7 @@ export function collection<const C extends CollectionConfig>(
     } as any;
   } else {
     const folder = collection.folder ?? `${contentFolder}/${collection.name}`;
-    const md = collection.fields?.some((field) => field.name === "body");
+    const md = hasMarkdownBody(collection.fields);
     const extension = collection.extension ?? (md ? "md" : "yml");
     const slug = collection.slug ?? "{{slug}}";
     const create = collection.create ?? true;
@@ -93,7 +96,9 @@ export function layout<T extends CollectionConfig>(
     ...collection,
   };
 
-  if (isFilesCollectionConfig(c)) return new FilesLayout(c, component as any);
+  if (isFilesCollectionConfig(c)) {
+    return new FilesLayout(c as any, component as any);
+  }
   return new FolderLayout(c as any, component as any);
 }
 

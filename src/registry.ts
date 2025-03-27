@@ -1,8 +1,8 @@
 import { ComponentType } from "react";
-import { CmsCollection } from "./decap-types.js";
+import { Collection } from "./decap-types.js";
 import { Layout, FilesLayout } from "./layout.js";
 
-export type CollectionOrLayout<T extends CmsCollection = any> = T | Layout<T>;
+export type CollectionOrLayout<T extends Collection = any> = T | Layout<T>;
 
 export type ExtractCollection<T extends CollectionOrLayout> = T extends Layout<
   infer C

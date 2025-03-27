@@ -1,11 +1,11 @@
 import {
-  CmsField,
   CmsFieldBoolean,
   CmsFieldNumber,
   EditorComponentField,
   EditorComponentOptions,
 } from "decap-cms-app";
 import {
+  Field,
   MultiSelectField,
   MultiWidgetListField,
   ObjectField,
@@ -50,7 +50,7 @@ export type InferVariableEditorListItem<F extends VariableListField> = {
   };
 }[F["types"][number]["name"]];
 
-export type InferFields<F extends readonly [...CmsField[]]> = {
+export type InferFields<F extends readonly [...Field[]]> = {
   [K in F[number] as K["name"]]: K extends { required: false }
     ? InferEditorFieldType<K> | undefined
     : InferEditorFieldType<K>;

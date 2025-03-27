@@ -3,7 +3,8 @@ import type {
   CmsCollectionFile,
   CmsField,
   CmsFieldBase,
-  CmsFieldStringOrText,
+  CmsFieldString,
+  CmsFieldText,
   CmsFieldColor,
   CmsFieldMarkdown,
   CmsFieldObject,
@@ -12,31 +13,36 @@ import type {
   CmsFieldFileOrImage,
   CmsFieldRelation,
   CmsFieldDateTime,
+  CmsFieldMeta,
 } from "decap-cms-app";
 
-export { type CmsCollection, CmsField, CmsCollectionFile };
+export type Collection = CmsCollection<false>;
 
-export type FilesCollection = CmsCollection & {
+export type Field = Exclude<CmsField<false>, CmsFieldMeta<false>>;
+
+export type CollectionFile = CmsCollectionFile<false>;
+
+export type FilesCollection = Collection & {
   files: CmsCollectionFile[];
 };
 
-export type FolderCollection = CmsCollection & {
+export type FolderCollection = Collection & {
   folder: string;
 };
 
 export function isFolderCollection(
-  collection: CmsCollection
+  collection: Collection
 ): collection is FolderCollection {
   return "folder" in collection && !("files" in collection);
 }
 
 export function isFilesCollection(
-  collection: CmsCollection
+  collection: Collection
 ): collection is FilesCollection {
   return "files" in collection;
 }
 
-export function isNested(collection: CmsCollection) {
+export function isNested(collection: Collection) {
   const depth = "nested" in collection && collection.nested?.depth;
   return !!depth;
 }
@@ -63,7 +69,8 @@ export type SelectField = CmsFieldBase & CmsFieldSelect;
 export type RelationField = CmsFieldBase & CmsFieldRelation;
 export type MultiSelectField = SelectField & { multiple: true };
 export type StringField =
-  | CmsFieldStringOrText
+  | CmsFieldString
+  | CmsFieldText
   | CmsFieldMarkdown
   | CmsFieldColor
   | CmsFieldFileOrImage

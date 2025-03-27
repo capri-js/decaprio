@@ -1,69 +1,69 @@
-import { CmsCollection } from "./decap-types.js";
+import { Collection } from "./decap-types.js";
 import { stripIndex } from "./match.js";
 
-type Item = {
+export type Item<T = {}> = T & {
   slug: string;
+  href: string;
+  active?: boolean;
 };
 
-export function sortBySlug(collection: CmsCollection, items: Item[]) {
-  const bySlug = (a: Item, b: Item) => {
-    return stripIndex(collection, a.slug).localeCompare(
-      stripIndex(collection, b.slug)
-    );
-  };
+export type TreeItem<T> = Item<T> & {
+  children: TreeItem<T>[];
+};
+
+function bySlug(a: Item, b: Item) {
+  return a.slug.localeCompare(b.slug);
+}
+
+export function sortBySlug<T>(items: Item<T>[]) {
   const sorted = [...items];
   sorted.sort(bySlug);
   return sorted;
 }
 
-export function getTopLevelItems(
-  collection: CmsCollection,
-  candidates: Item[]
-) {
-  return sortBySlug(
-    collection,
-    candidates.filter(({ slug }) => !getParentSlug(collection, slug))
-  );
+function normalize<T>(collection: Collection, items: Item<T>[]): Item<T>[] {
+  return items.map(({ slug, ...rest }) => ({
+    slug: stripIndex(collection, slug),
+    ...rest,
+  })) as any;
+}
+function isActive(item: Item, activeSlug?: string) {
+  return activeSlug ? activeSlug.startsWith(item.slug) : item.slug === "";
 }
 
-export function getChildren(
-  collection: CmsCollection,
+export function getChildren<T>(
+  collection: Collection,
   slug: string,
-  candidates: Item[]
-) {
+  candidates: Item<T>[],
+  activeSlug?: string
+): Item<T>[] {
   const parentSlug = stripIndex(collection, slug);
   return sortBySlug(
-    collection,
-    candidates.filter(({ slug }) => isParent(collection, parentSlug, slug))
+    normalize(collection, candidates)
+      .filter(({ slug }) => isParent(parentSlug, slug))
+      .map((item) => ({ ...item, active: isActive(item, activeSlug) }))
   );
 }
 
-function isParent(
-  collection: CmsCollection,
-  potentialParent: string,
-  slug: string
-) {
-  const c = stripIndex(collection, slug);
+function isParent(potentialParent: string, slug: string) {
   return (
-    c.startsWith(potentialParent) &&
-    c.lastIndexOf("/") <= potentialParent.length
+    slug.startsWith(potentialParent) &&
+    slug !== potentialParent &&
+    slug.lastIndexOf("/") <= potentialParent.length
   );
 }
 
-function getParentSlug(collection: CmsCollection, slug: string) {
-  const parts = stripIndex(collection, slug).split("/");
-  if (parts.length < 2) return "";
-  return parts.slice(0, -1).join("/");
-}
-
-export function getSiblings(
-  collection: CmsCollection,
-  slug: string,
-  candidates: Item[]
-) {
-  const parentSlug = getParentSlug(collection, slug);
-  return sortBySlug(
-    collection,
-    candidates.filter(({ slug }) => isParent(collection, parentSlug, slug))
-  );
+export function getSubTree<T>(
+  collection: Collection,
+  all: Item<T>[],
+  activeSlug?: string,
+  parent = ""
+): TreeItem<T>[] {
+  return getChildren<T>(collection, parent, all, activeSlug).map((item) => ({
+    ...item,
+    children:
+      item.slug === parent
+        ? []
+        : getSubTree<T>(collection, all, activeSlug, item.slug),
+  }));
 }

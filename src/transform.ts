@@ -1,7 +1,7 @@
 import immutable from "immutable";
 import {
-  CmsCollection,
-  CmsField,
+  Collection,
+  Field,
   isRelationField,
   isFolderCollection,
 } from "./decap-types.js";
@@ -17,7 +17,7 @@ function isMap(value: unknown): value is immutable.Map<unknown, unknown> {
   return immutable.Map.isMap(value);
 }
 
-function nestedFields(f?: CmsField): CmsField[] {
+function nestedFields(f?: Field): Field[] {
   if (f) {
     if ("types" in f) {
       return f.types ?? [];
@@ -32,7 +32,7 @@ function nestedFields(f?: CmsField): CmsField[] {
   return [];
 }
 
-function collectionFields(c: CmsCollection, slug: string) {
+function collectionFields(c: Collection, slug: string) {
   if (isFolderCollection(c)) {
     return c.fields ?? [];
   }
@@ -42,7 +42,7 @@ function collectionFields(c: CmsCollection, slug: string) {
 interface TransformOptions {
   load: (collection: string, slug: string) => Promise<unknown>;
   loadAll: (collection: string) => Promise<unknown[]>;
-  getCollection: (collection: string) => CmsCollection;
+  getCollection: (collection: string) => Collection;
   getAsset?: (path: string) => string;
   preview?: boolean;
 }
@@ -63,7 +63,7 @@ export function createTransform({
     return getPathForSlug(collection, slug, preview);
   };
 
-  const transformValue = async (value: unknown, field: CmsField) => {
+  const transformValue = async (value: unknown, field: Field) => {
     if (isRelationField(field) && typeof value === "string") {
       const loadedValue = await load(field.collection, value);
       if (loadedValue) {
@@ -94,7 +94,7 @@ export function createTransform({
 
   const visit = async (
     value: Immutable,
-    fields: CmsField[],
+    fields: Field[],
     path = ""
   ): Promise<Immutable> => {
     if (!fields?.length) {
@@ -199,7 +199,7 @@ export function createTransform({
     return result;
   };
 
-  return async (value: unknown, fields: CmsField[]) => {
+  return async (value: unknown, fields: Field[]) => {
     const immutableValue = isMap(value) ? value : immutable.fromJS(value);
     const transformed = await visit(immutableValue, fields);
     return transformed?.toJS();

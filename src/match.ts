@@ -1,5 +1,5 @@
 import {
-  CmsCollection,
+  Collection,
   isFilesCollection,
   isFolderCollection,
 } from "./decap-types.js";
@@ -10,11 +10,11 @@ function previewPathToRegex(previewPath: string) {
   );
 }
 
-export function getIndexFile(collection: CmsCollection) {
+export function getIndexFile(collection: Collection) {
   return collection.meta?.path?.index_file ?? "index";
 }
 
-export function stripIndex(collection: CmsCollection, slug: string) {
+export function stripIndex(collection: Collection, slug: string) {
   const index = getIndexFile(collection);
   const re = new RegExp(`(^|\\/)${index}$`);
   return slug.replace(re, "");
@@ -29,7 +29,7 @@ export function getSlugFromFile(file: string) {
   return m && m[1];
 }
 
-export function matchPath(collection: CmsCollection, path: string) {
+export function matchPath(collection: Collection, path: string) {
   if (isFolderCollection(collection) && collection.preview_path) {
     const re = previewPathToRegex(collection.preview_path);
     const match = re.exec(path);
@@ -51,7 +51,7 @@ export function matchPath(collection: CmsCollection, path: string) {
 }
 
 export function getPathForSlug(
-  collection: CmsCollection,
+  collection: Collection,
   slug: string,
   preview = false
 ) {

@@ -1,11 +1,11 @@
 import { ComponentType } from "react";
 import {
-  CmsCollection,
+  Collection,
   FilesCollection,
   FolderCollection,
 } from "./decap-types.js";
 
-export abstract class Layout<T extends CmsCollection> {
+export abstract class Layout<T extends Collection> {
   constructor(public collection: T) {}
   getLayout(): ComponentType<any> {
     throw new Error("Use either a FilesLayout or FolderLayout subclass.");

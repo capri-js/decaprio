@@ -38,7 +38,7 @@ For folder collections:
 * folder: `content/${name}`
 * slug: `{{slug}}`
 * create: `true`
-* extension: `md` if there is a `body` field, `yml` otherwise
+* extension: `md` if there is a markdown `body` field, `yml` otherwise
 
 For collection files:
 * path: `content/${collection.name}/${name}.${extension}`
@@ -286,7 +286,10 @@ import { markdown } from "decaprio";
 import linkButton from "./LinkButton";
 
 export const editorComponents = [linkButton];
-export const Markdown = markdown(editorComponents);
+const options = {
+  // See https://www.npmjs.com/package/markdown-to-jsx
+};
+export const Markdown = markdown(editorComponents, options);
 ```
 
 ### 3. Register the components with Decap

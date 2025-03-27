@@ -2,16 +2,20 @@ import Markdown, { MarkdownToJSX } from "markdown-to-jsx";
 import { Fragment } from "react";
 import { ReactEditorComponentOptions } from "./editor-components.js";
 
-export function markdown(opts: ReactEditorComponentOptions[]) {
-  const overrides: MarkdownToJSX.Overrides = {};
-  for (const { id, toPreview } of opts) {
+export function markdown(
+  editorComponents: ReactEditorComponentOptions[],
+  opts: MarkdownToJSX.Options = {}
+) {
+  const { overrides = {}, wrapper = Fragment, ...rest } = opts;
+  for (const { id, toPreview } of editorComponents) {
     overrides[id] = {
       component: toPreview,
     };
   }
   const options = {
-    wrapper: Fragment,
+    wrapper,
     overrides,
+    ...opts,
   };
 
   return ({ content }: { content: string }) => (

@@ -4,7 +4,7 @@ import * as yaml from "js-yaml";
 import matter from "gray-matter";
 
 import {
-  CmsField,
+  Field,
   FilesCollection,
   FolderCollection,
   isFilesCollection,
@@ -113,7 +113,7 @@ export class Content {
   protected async getContentAndFields(
     name: string,
     file: string
-  ): Promise<{ data: any; fields: CmsField[] }> {
+  ): Promise<{ data: any; fields: Field[] }> {
     const c = this.registry.getCollection(name);
     if (isFolderCollection(c)) {
       return {
