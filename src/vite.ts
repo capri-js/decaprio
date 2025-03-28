@@ -2,11 +2,8 @@ import { PluginOption } from "vite";
 import capri from "@capri-js/react";
 import react from "@vitejs/plugin-react";
 import { optimizeLodashImports } from "@optimize-lodash/rollup-plugin";
-import { CollectionRegistry } from "./registry.js";
-import { listAllPaths } from "./server.js";
 
 export interface DecaprioPluginOptions {
-  registry: CollectionRegistry;
   createIndexFiles?: boolean;
   inlineCss?: boolean;
   adminRoute?: string;
@@ -21,7 +18,6 @@ export function decaprio(options: DecaprioPluginOptions): PluginOption {
     capri({
       createIndexFiles: options.createIndexFiles ?? false,
       inlineCss: options.inlineCss ?? true,
-      prerender: () => listAllPaths(options.registry),
       spa: options.adminRoute ?? "/admin",
     })
   );

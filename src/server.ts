@@ -6,19 +6,17 @@ import { CollectionRegistry } from "./registry.js";
 
 export { Content };
 
-export function createRenderFunction(
-  registry: CollectionRegistry,
-  document = DefaultDocument
-) {
+export function ssr(registry: CollectionRegistry, document = DefaultDocument) {
   const content = new Content(registry);
-  return async (url: string) => {
-    const children = await content.resolve(url);
-    if (children) {
-      return prerenderToNodeStream(createElement(document, { children }));
-    }
+  return {
+    async render(url: string) {
+      const children = await content.resolve(url);
+      if (children) {
+        return prerenderToNodeStream(createElement(document, { children }));
+      }
+    },
+    async getStaticPaths() {
+      return content.listAllPaths();
+    },
   };
-}
-
-export async function listAllPaths(registry: CollectionRegistry) {
-  return new Content(registry).listAllPaths();
 }

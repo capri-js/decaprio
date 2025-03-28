@@ -366,10 +366,10 @@ In addition to the `src/main.tsx` entry file we created above, we need a second 
 // src/main.server.tsx
 
 import { registry } from "./collections";
-import { createRenderFunction } from "decaprio/server";
+import { ssr } from "decaprio/server";
 import "./main.css";
 
-export const render = createRenderFunction(registry);
+export const { render, getStaticPaths } = ssr(registry);
 ```
 
 ## Using other SSR tools
