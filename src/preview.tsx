@@ -67,7 +67,7 @@ function useData(props: PreviewTemplateComponentProps) {
   return data;
 }
 
-function useDecapLinks(doc: Document) {
+function useDecapLinks(previewDoc: Document) {
   useEffect(() => {
     const handleClick = (e: Event) => {
       const target = e.target as HTMLElement;
@@ -89,25 +89,52 @@ function useDecapLinks(doc: Document) {
       location.reload();
     };
 
-    doc.addEventListener("click", handleClick, { capture: true });
+    previewDoc.addEventListener("click", handleClick, { capture: true });
     return () =>
-      doc.removeEventListener("click", handleClick, { capture: true });
+      previewDoc.removeEventListener("click", handleClick, { capture: true });
+  }, []);
+}
+
+function usePreviewStyles(previewDoc: Document) {
+  useEffect(() => {
+    const syncStyles = () => {
+      const styles = document.head.querySelectorAll("style[data-vite-dev-id]");
+      styles.forEach((style) => {
+        const existing = previewDoc.querySelector(
+          `style[data-vite-dev-id="${style.getAttribute("data-vite-dev-id")}"]`
+        );
+        if (existing) existing.remove();
+        previewDoc.head.appendChild(style.cloneNode(true));
+      });
+    };
+
+    // Initial sync
+    syncStyles();
+
+    // Observe style changes in top document
+    const observer = new MutationObserver(() => {
+      syncStyles();
+    });
+
+    observer.observe(document.head, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    return () => observer.disconnect();
   }, []);
 }
 
 type PreviewProps = PreviewTemplateComponentProps & {
   layout?: React.ComponentType<any>;
-  css?: string;
 };
 
 export function Preview(props: PreviewProps) {
   useDecapLinks(props.document);
+  usePreviewStyles(props.document);
+
   const data = useData(props);
   if (!data) return null;
-  return (
-    <div>
-      <style>{props.css}</style>
-      {props.layout && <props.layout {...data} />}
-    </div>
-  );
+  return <div>{props.layout && <props.layout {...data} />}</div>;
 }

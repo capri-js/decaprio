@@ -7,14 +7,12 @@ import { ReactEditorComponentOptions } from "./editor-components.js";
 import { isFilesCollection } from "./decap-types.js";
 
 type Options = {
-  css: string;
   registry: CollectionRegistry;
   config: Omit<CmsConfig, "collections">;
   editorComponents?: ReactEditorComponentOptions[];
   setup?: (cms: CMS) => void;
 };
 export function init({
-  css,
   registry,
   config,
   editorComponents = [],
@@ -32,7 +30,6 @@ export function init({
             cms.registerPreviewTemplate(f.name, (props) =>
               createElement(Preview, {
                 ...props,
-                css,
                 layout: registry.getLayout(f.name),
               })
             );
@@ -41,7 +38,6 @@ export function init({
           cms.registerPreviewTemplate(c.name, (props) =>
             createElement(Preview, {
               ...props,
-              css,
               layout: registry.getLayout(c.name),
             })
           );

@@ -9,7 +9,7 @@ export interface DecaprioPluginOptions {
   adminRoute?: string;
 }
 
-export function decaprio(options: DecaprioPluginOptions): PluginOption {
+export function decaprio(options: DecaprioPluginOptions = {}): PluginOption {
   const plugins: PluginOption[] = [];
 
   plugins.push(react());

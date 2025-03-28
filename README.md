@@ -306,12 +306,12 @@ Let's assume we use a Vite-based setup. In this case we can initialize Decap lik
 import { init } from "decaprio/decap";
 import { registry } from "./collections";
 import { editorComponents } from "./markdown";
-import css from "./styles.css?inline";
+
+import "./styles.css";
 
 init({
   registry,
   editorComponents,
-  css, // In Vite, ?inline imports the CSS as string
   config: {
     // Standard Decap config without the collections
     backend: {
@@ -328,7 +328,6 @@ The `init` function takes care of registering the full-page previews and accepts
 
 - Your registry of collections and layouts
 - Your custom Editor Components (optional)
-- Your CSS inlined as a string (with Vite, you can use the `?inline` suffix)
 - A standard Decap CMS configuration (without the collections, as they come from the registry)
 
 > **NOTE:**
