@@ -98,20 +98,23 @@ function useDecapLinks(previewDoc: Document) {
 function usePreviewStyles(previewDoc: Document) {
   useEffect(() => {
     const syncStyles = () => {
+      // Find all custom styles
       const styles = document.head.querySelectorAll("style[data-vite-dev-id]");
       styles.forEach((style) => {
+        // Prevent styles from being applied to the Decap UI:
+        style.setAttribute("media", "(width:0)");
         const existing = previewDoc.querySelector(
           `style[data-vite-dev-id="${style.getAttribute("data-vite-dev-id")}"]`
         );
         if (existing) existing.remove();
-        previewDoc.head.appendChild(style.cloneNode(true));
+        const clone = style.cloneNode(true) as HTMLStyleElement;
+        // Remove our width:0 media query:
+        clone.removeAttribute("media");
+        previewDoc.head.appendChild(clone);
       });
     };
 
-    // Initial sync
     syncStyles();
-
-    // Observe style changes in top document
     const observer = new MutationObserver(() => {
       syncStyles();
     });
