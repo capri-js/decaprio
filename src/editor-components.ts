@@ -85,7 +85,7 @@ export function editorComponent<T extends EditOpts<any>>(
 ): ReactEditorComponentOptions {
   return {
     ...opts,
-    pattern: new RegExp(`<${opts.id}\s+(.*?)\s*/>`, "s"),
+    pattern: new RegExp(`^<${opts.id}\\s+(.*?)\\s*/>`, "s"),
     fromBlock(match) {
       const [, props] = match;
       const regex = /(\w+)="(.*?)"/g;
