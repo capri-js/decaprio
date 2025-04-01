@@ -336,36 +336,13 @@ The `init` function takes care of registering the full-page previews and accepts
 
 ## Server-side Rendering
 
-Decaprio provides a Vite plugin that lets you generate static pages with [Capri](https://capri.build):
-
-```tsx
-// vite.config.ts
-
-import { defineConfig } from "vite";
-import { decaprio } from "decaprio/vite";
-import tailwindcss from "@tailwindcss/vite";
-import { registry } from "./src/collections";
-
-export default defineConfig({
-  plugins: [
-    decaprio({
-      registry,
-      adminRoute: "/admin",
-      createIndexFiles: false,
-      inlineCss: true,
-    }),
-    tailwindcss(),
-  ],
-});
-```
-
-In addition to the `src/main.tsx` entry file we created above, we need a second one right next to it called `main.server.tsx` that handles the generation of the static pages:
+The easiest and most lightweight way to render static HTML pages is by using [Capri](https://capri.build). All we need to do is to create a `src/main.server.tsx` file right next to the `src/main.tsx` file we created above:
 
 ```tsx
 // src/main.server.tsx
 
 import { registry } from "./collections";
-import { ssr } from "decaprio/server";
+import { ssr } from "decaprio/static";
 import "./main.css";
 
 export const { render, getStaticPaths } = ssr(registry);
