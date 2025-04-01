@@ -1,10 +1,11 @@
-import {
+import { compiler } from "markdown-to-jsx";
+import type {
   CmsFieldBoolean,
   CmsFieldNumber,
   EditorComponentField,
   EditorComponentOptions,
 } from "decap-cms-app";
-import {
+import type {
   Field,
   MultiSelectField,
   MultiWidgetListField,
@@ -80,6 +81,28 @@ export type ReactEditorComponentOptions = Omit<
   toPreview: (props: any) => ReactElement;
 };
 
+function couldBeJsonValue(value: string) {
+  return /^\{.*\}|\[.*\]|".*"$/.test(value);
+}
+
+function tryParseJson(value?: string) {
+  if (!value) return value;
+  try {
+    return couldBeJsonValue(value) ? JSON.parse(value) : value;
+  } catch {
+    return value;
+  }
+}
+
+function unwrapJson(props: Record<string, string>) {
+  const res: Record<string, unknown> = {};
+  for (const name in props) {
+    const value = props[name];
+    res[name] = tryParseJson(htmlDecode(value));
+  }
+  return res;
+}
+
 export function editorComponent<T extends EditOpts<any>>(
   opts: T
 ): ReactEditorComponentOptions {
@@ -87,24 +110,32 @@ export function editorComponent<T extends EditOpts<any>>(
     ...opts,
     pattern: new RegExp(`^<${opts.id}\\s+(.*?)\\s*/>`, "s"),
     fromBlock(match) {
-      const [, props] = match;
-      const regex = /(\w+)="(.*?)"/g;
-      const result: Record<string, string> = {};
-      let m;
-      while ((m = regex.exec(props)) !== null) {
-        result[m[1]] = m[2];
-      }
-      return result;
+      const [md] = match;
+      const props = compiler(md).props;
+      return unwrapJson(props);
     },
     toBlock(data) {
       const attrs = Object.entries(data)
-        .map(([key, value]) => `${key}="${htmlEncode(value as string)}"`)
+        .filter(([, value]) => typeof value !== "undefined")
+        .map(([key, value]) => {
+          if (typeof value === "string" && !couldBeJsonValue(value)) {
+            return `${key}=${JSON.stringify(htmlEncode(value))}`;
+          }
+          return `${key}={${htmlEncode(JSON.stringify(value))}}`;
+        })
         .join(" ");
       return `<${opts.id} ${attrs} />`;
+    },
+    toPreview(props) {
+      return opts.toPreview(unwrapJson(props));
     },
   };
 }
 
+function htmlDecode(str?: string) {
+  return str && str.replace(/&gt;/g, ">");
+}
+
 function htmlEncode(str: string): string {
-  return str.replace(/"/g, "&quot;").replace(/>/g, "&gt;");
+  return str.replace(/>/g, "&gt;");
 }

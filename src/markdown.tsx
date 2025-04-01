@@ -1,6 +1,6 @@
 import Markdown, { MarkdownToJSX } from "markdown-to-jsx";
 import { Fragment } from "react";
-import { ReactEditorComponentOptions } from "./editor-components.js";
+import type { ReactEditorComponentOptions } from "./editor-components.js";
 
 export function markdown(
   editorComponents: ReactEditorComponentOptions[],

@@ -30,17 +30,18 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./vite": {
-      "types": "./dist/vite.d.ts",
-      "import": "./dist/vite.js"
-    },
     "./decap": {
       "types": "./dist/decap.d.ts",
+      "node": "./dist/decap.node.js",
       "import": "./dist/decap.js"
     },
     "./server": {
       "types": "./dist/server.d.ts",
       "import": "./dist/server.js"
+    },
+    "./static": {
+      "types": "./dist/static.d.ts",
+      "import": "./dist/static.js"
     }
   },
   "dependencies": {

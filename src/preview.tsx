@@ -1,5 +1,5 @@
 import React from "react";
-import { PreviewTemplateComponentProps, CmsConfig } from "decap-cms-app";
+import type { PreviewTemplateComponentProps, CmsConfig } from "decap-cms-app";
 
 import { createTransform } from "./transform.js";
 import { useRef, useState, useEffect } from "react";
@@ -97,20 +97,34 @@ function useDecapLinks(previewDoc: Document) {
 
 function usePreviewStyles(previewDoc: Document) {
   useEffect(() => {
+    const transferElement = (el: Element) => {
+      // Prevent styles from being applied to the Decap UI:
+      el.setAttribute("media", "(width:0)");
+      const clone = el.cloneNode(true) as Element;
+      // Remove our width:0 media query:
+      clone.removeAttribute("media");
+      clone.setAttribute("decap-preview", "true");
+      previewDoc.head.appendChild(clone);
+    };
+
     const syncStyles = () => {
       // Find all custom styles
       const styles = document.head.querySelectorAll("style[data-vite-dev-id]");
+      const links = document.head.querySelectorAll<HTMLLinkElement>(
+        "link[rel=stylesheet]"
+      );
+
       styles.forEach((style) => {
-        // Prevent styles from being applied to the Decap UI:
-        style.setAttribute("media", "(width:0)");
         const existing = previewDoc.querySelector(
           `style[data-vite-dev-id="${style.getAttribute("data-vite-dev-id")}"]`
         );
+        transferElement(style);
         if (existing) existing.remove();
-        const clone = style.cloneNode(true) as HTMLStyleElement;
-        // Remove our width:0 media query:
-        clone.removeAttribute("media");
-        previewDoc.head.appendChild(clone);
+      });
+
+      links.forEach((link) => {
+        const existing = previewDoc.querySelector(`link[href="${link.href}"]`);
+        if (!existing) transferElement(link);
       });
     };
 

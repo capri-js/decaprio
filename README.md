@@ -373,24 +373,76 @@ export const { render, getStaticPaths } = ssr(registry);
 
 ## Using other SSR tools
 
-While Decaprio was built with Capri in mind, it can be used with any suitable tool or framework that supports server-side rendering. In Next.js it would roughly look like this:
+While Decaprio was built with Capri in mind, it can be used with any suitable tool or framework that supports server-side rendering. In Next.js it would look like this:
 
 ```tsx
+// app/[[...slug]]/page.tsx
+
 import { Content } from "decaprio/server";
-import { registry } from "./collections";
+import { registry } from "@/collections";
+
+import "@/main.css";
 
 const content = new Content(registry);
 
-// Use with your preferred SSR framework
+type PageParams = {
+  params: Promise<{
+    slug: string[];
+  }>;
+};
 
-export async function getStaticPaths() {
+export async function generateStaticParams() {
   const paths = await content.listAllPaths();
-  return paths.map((path) => ({ params: { slug: path } }));
+  return paths.map((path) => ({ slug: path.split("/") }));
 }
 
-export async function getStaticProps({ params }) {
-  const content = await content.resolve(`/${params.slug}`);
-  return { props: { content } };
+export default async function Page({ params }: PageParams) {
+  const { slug = [] } = await params;
+  const path = `/${slug.join("/")}`;
+  const children = await content.resolve(path);
+  return <>{children}</>;
+}
+```
+
+And a second page to render the Decap UI:
+
+```tsx
+// app/admin/page.tsx
+
+import { Client } from "./client";
+
+import "@/main.css";
+
+export default function Page() {
+  return <Client />;
+}
+```
+
+As Decap needs to be rendered in the client, we need to create a _client component_:
+
+```tsx
+// app/admin/client.tsx
+
+"use client";
+
+import { init } from "decaprio/decap";
+import IconWidget from "decap-cms-widget-iconify";
+
+import { registry } from "@/collections";
+import { editorComponents } from "@/markdown";
+import { useEffect } from "react";
+
+export function Client() {
+  useEffect(() => {
+    init({
+      registry,
+      editorComponents,
+      config: {
+        // Regular Decap config ...
+      },
+    });
+  }, []);
+  return null;
 }
 ```
 
